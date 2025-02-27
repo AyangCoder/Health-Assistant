@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康助理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #F3F4F6;
+            color: #1F2937;
+            line-height: 1.5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #3B82F6;
+        }
+        
+        .input-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-field {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .info-icon {
+            display: inline-block;
+            margin-left: 5px;
+            color: #3B82F6;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+            /* 增加内边距扩大可点击区域 */
+            position: relative;
+            /* 确保相对定位以便子元素可以绝对定位 */
+            z-index: 10;
+            /* 提高z-index确保图标在上层 */
+        }
+        
+        .tooltip {
+            display: none;
+            position: absolute;
+            background-color: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #1E40AF;
+            width: 250px;
+            top: 35px;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        button {
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto 30px;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #2563EB;
+        }
+        
+        .result-container {
+            background-color: #F9FAFB;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .bmi-report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .bmi-report-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .bmi-report-status {
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background-color: #E5E7EB;
+        }
+        
+        .bmi-value-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .bmi-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #3B82F6;
+        }
+        
+        .bmi-range {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 5px;
+        }
+        
+        .base-index-info {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #EFF6FF;
+            border-radius: 8px;
+            border-left: 4px solid #3B82F6;
+        }
+        
+        .health-advice {
+            background-color: #F3F4F6;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .health-advice-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .health-advice ul {
+            padding-left: 20px;
+        }
+        
+        .health-advice li {
+            margin-bottom: 5px;
+        }
+        
+        /* BMI状态样式 */
+        .bmi-underweight .bmi-report-status {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .bmi-normal .bmi-report-status {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+        
+        .bmi-overweight .bmi-report-status {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .bmi-obese .bmi-report-status {
+            background-color: #FEE2E2;
+            color: #B91C1C;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>健康助理</h1>
+        <p style="text-align: center; margin-bottom: 30px;">输入您的身高、体重和性别，计算BMI和体型基数</p>
+        
+        <div class="input-section">
+            <div class="input-field">
+                <label for="height">身高 (cm)<i class="fas fa-info-circle info-icon" id="heightInfo"></i></label>
+                <input type="number" id="height" placeholder="请输入身高" required>
+                <div class="tooltip" id="heightTooltip">请输入有效身高：50cm 到 250cm 之间</div>
+            </div>
+            <div class="input-field">
+                <label for="weight">体重 (kg)<i class="fas fa-info-circle info-icon" id="weightInfo"></i></label>
+                <input type="number" id="weight" placeholder="请输入体重" required>
+                <div class="tooltip" id="weightTooltip">请输入有效体重：20kg 到 300kg 之间</div>
+            </div>
+            <div class="input-field">
+                <label for="gender">性别</label>
+                <select id="gender" required>
+                    <option value="">请选择性别</option>
+                    <option value="male">男</option>
+                    <option value="female">女</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="calculateBtn">计算BMI</button>
+        
+        <div id="result" class="result-container" style="display: none;"></div>
+    </div>
+
+    <script src="js/index.js"></script>
+    <script>
+        // 添加感叹号图标点击事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 身高提示
+            const heightInfo = document.getElementById('heightInfo');
+            const heightTooltip = document.getElementById('heightTooltip');
+            
+            heightInfo.addEventListener('click', function() {
+                if (heightTooltip.style.display === 'block') {
+                    heightTooltip.style.display = 'none';
+                } else {
+                    heightTooltip.style.display = 'block';
+                    weightTooltip.style.display = 'none';
+                }
+            });
+            
+            // 体重提示
+            const weightInfo = document.getElementById('weightInfo');
+            const weightTooltip = document.getElementById('weightTooltip');
+            
+            weightInfo.addEventListener('click', function() {
+                if (weightTooltip.style.display === 'block') {
+                    weightTooltip.style.display = 'none';
+                } else {
+                    weightTooltip.style.display = 'block';
+                    heightTooltip.style.display = 'none';
+                }
+            });
+            
+            // 点击其他地方关闭提示
+            document.addEventListener('click', function(event) {
+                if (!heightInfo.contains(event.target) && !weightInfo.contains(event.target)) {
+                    heightTooltip.style.display = 'none';
+                    weightTooltip.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
